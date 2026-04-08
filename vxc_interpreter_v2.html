@@ -1,0 +1,1207 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+#root{display:flex;flex-direction:column;min-height:600px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+#toolbar{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);flex-wrap:wrap}
+#toolbar .title{font-size:13px;font-weight:500;color:var(--color-text-primary);flex:1;min-width:80px}
+.tb-btn{font-size:11px;padding:4px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer}
+.tb-btn:hover{background:var(--color-background-secondary)}
+.tb-btn.run{background:#1D9E75;color:#fff;border-color:#1D9E75;font-weight:500;font-size:12px;padding:4px 14px}
+.tb-btn.run:hover{background:#0F6E56}
+#main{display:grid;grid-template-columns:1fr 1fr;flex:1;min-height:460px}
+#editor-pane{display:flex;flex-direction:column;border-right:0.5px solid var(--color-border-tertiary)}
+.pane-label{font-size:10px;color:var(--color-text-secondary);padding:5px 12px;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);letter-spacing:.06em;text-transform:uppercase}
+#editor{flex:1;resize:none;border:none;outline:none;padding:12px;font-family:var(--font-mono);font-size:12px;line-height:1.65;background:var(--color-background-primary);color:var(--color-text-primary);min-height:400px;tab-size:2}
+#output-pane{display:flex;flex-direction:column}
+#output{flex:1;padding:12px;font-family:var(--font-mono);font-size:12px;line-height:1.65;background:var(--color-background-primary);color:var(--color-text-primary);white-space:pre-wrap;overflow-y:auto;min-height:400px}
+.ok{color:var(--color-text-primary)}
+.err{color:#D85A30}
+.warn{color:#BA7517}
+.info{color:var(--color-text-secondary);font-style:italic}
+.dbg{color:#185FA5}
+#examples-bar{display:flex;gap:5px;flex-wrap:wrap;padding:7px 12px;border-top:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);align-items:center}
+#examples-bar .lbl{font-size:10px;color:var(--color-text-secondary);letter-spacing:.04em}
+.ex-btn{font-size:10px;padding:2px 8px;border:0.5px solid var(--color-border-secondary);border-radius:20px;background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer}
+.ex-btn:hover{color:var(--color-text-primary);border-color:var(--color-border-primary)}
+#docs-bar{display:flex;gap:5px;flex-wrap:wrap;padding:6px 12px;border-top:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);align-items:center}
+#docs-bar .lbl{font-size:10px;color:var(--color-text-secondary)}
+.doc-btn{font-size:10px;padding:2px 8px;border:0.5px solid var(--color-border-tertiary);border-radius:20px;background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer}
+.doc-btn:hover{color:var(--color-text-primary)}
+#input-row{display:flex;gap:6px;padding:6px 12px;border-top:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);align-items:center}
+#stdin-input{flex:1;font-family:var(--font-mono);font-size:12px;padding:4px 8px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);outline:none}
+</style>
+
+<div id="root">
+  <div id="toolbar">
+    <span class="title">VXC 2.0</span>
+    <button class="tb-btn" id="clearBtn">Clear output</button>
+    <button class="tb-btn" id="resetBtn">Reset</button>
+    <button class="tb-btn run" id="runBtn">&#9654; Run</button>
+  </div>
+  <div id="main">
+    <div id="editor-pane">
+      <div class="pane-label">code</div>
+      <textarea id="editor" spellcheck="false">set name to "VXC 2.0"
+say "Welcome to " + name + "!"
+say ""
+
+set arr to [10, 20, 30, 40, 50]
+say "Array: " + join(arr, ", ")
+say "Length: " + len(arr)
+say "Sum: " + sum(arr)
+say "Max: " + max(arr)
+say "Min: " + min(arr)
+say ""
+
+set msg to "Hello, World!"
+say upper(msg)
+say lower(msg)
+say reverse(msg)
+say len(msg)
+say ""
+
+define greet(person)
+  return "Hi, " + person + "!"
+end
+
+say call greet("Alice")
+say call greet("Bob")
+say ""
+
+set i to 1
+loop i to 5
+  if (i % 2) == 0
+    say i + " is even"
+  else
+    say i + " is odd"
+  end
+  set i to i + 1
+end
+say ""
+
+set x to 16
+say "sqrt(" + x + ") = " + sqrt(x)
+say "pow(2,8) = " + pow(2, 8)
+say "abs(-42) = " + abs(-42)
+say "floor(3.9) = " + floor(3.9)
+say "ceil(3.1) = " + ceil(3.1)
+say "round(3.5) = " + round(3.5)
+</textarea>
+    </div>
+    <div id="output-pane">
+      <div class="pane-label">output</div>
+      <div id="output"><span class="info">Press Run to execute your VXC code.</span></div>
+    </div>
+  </div>
+  <div id="input-row">
+    <span style="font-size:10px;color:var(--color-text-secondary)">stdin:</span>
+    <input id="stdin-input" type="text" placeholder="input values for read / readline (comma-separated)">
+  </div>
+  <div id="examples-bar">
+    <span class="lbl">Examples:</span>
+    <button class="ex-btn" data-ex="hello">Hello</button>
+    <button class="ex-btn" data-ex="arrays">Arrays</button>
+    <button class="ex-btn" data-ex="strings">Strings</button>
+    <button class="ex-btn" data-ex="math">Math</button>
+    <button class="ex-btn" data-ex="funcs">Functions</button>
+    <button class="ex-btn" data-ex="loops">Loops</button>
+    <button class="ex-btn" data-ex="ifelse">If/else</button>
+    <button class="ex-btn" data-ex="maps">Maps</button>
+    <button class="ex-btn" data-ex="types">Types</button>
+    <button class="ex-btn" data-ex="error">Try/catch</button>
+    <button class="ex-btn" data-ex="fizzbuzz">FizzBuzz</button>
+    <button class="ex-btn" data-ex="sort">Sort</button>
+    <button class="ex-btn" data-ex="recursion">Recursion</button>
+    <button class="ex-btn" data-ex="closures">Closures</button>
+    <button class="ex-btn" data-ex="format">Formatting</button>
+  </div>
+  <div id="docs-bar">
+    <span class="lbl">Docs:</span>
+    <button class="doc-btn" data-doc="vars">Variables</button>
+    <button class="doc-btn" data-doc="control">Control flow</button>
+    <button class="doc-btn" data-doc="funcs">Functions</button>
+    <button class="doc-btn" data-doc="arrays">Arrays</button>
+    <button class="doc-btn" data-doc="maps">Maps</button>
+    <button class="doc-btn" data-doc="strings">Strings</button>
+    <button class="doc-btn" data-doc="math">Math</button>
+    <button class="doc-btn" data-doc="io">I/O</button>
+    <button class="doc-btn" data-doc="types">Types</button>
+    <button class="doc-btn" data-doc="error">Errors</button>
+  </div>
+</div>
+
+<script>
+const EXAMPLES = {
+hello:`say "Hello, World!"
+say "VXC 2.0 is running."
+set x to 42
+say "The answer is " + x`,
+
+arrays:`set a to [1, 2, 3, 4, 5]
+say join(a, ", ")
+say len(a)
+say sum(a)
+say max(a)
+say min(a)
+push(a, 99)
+say "After push: " + join(a, ", ")
+set b to pop(a)
+say "Popped: " + b
+say "After pop: " + join(a, ", ")
+say "First: " + first(a)
+say "Last: " + last(a)
+set c to slice(a, 1, 3)
+say "Slice 1..3: " + join(c, ", ")
+set d to reverse_arr(a)
+say "Reversed: " + join(d, ", ")
+set e to sort_arr(a)
+say "Sorted: " + join(e, ", ")
+say contains(a, 3)
+say index_of(a, 4)
+set f to map_arr(a, "double")
+say "Doubled: " + join(f, ", ")
+set g to filter_arr(a, "positive")
+say "Filtered positive: " + join(g, ", ")`,
+
+strings:`set s to "Hello, World!"
+say upper(s)
+say lower(s)
+say len(s)
+say reverse(s)
+say trim("  hello  ")
+say replace(s, "World", "VXC")
+say starts_with(s, "Hello")
+say ends_with(s, "!")
+say contains_str(s, "World")
+say split(s, ", ")
+say repeat("ab", 3)
+say pad_left("42", 6, "0")
+say pad_right("hi", 6, ".")
+say char_at(s, 0)
+say index_of_str(s, "World")
+say substr(s, 7, 5)
+say concat("foo", "bar", "baz")
+say capitalize("hello world")
+say count_str(s, "l")`,
+
+math:`say pi
+say e
+say sqrt(144)
+say pow(2, 10)
+say abs(-7)
+say floor(4.9)
+say ceil(4.1)
+say round(4.5)
+say round(4.4)
+say log(100, 10)
+say log2(1024)
+say ln(e)
+say sin(0)
+say cos(0)
+say tan(0)
+say max(3, 7, 1, 9, 2)
+say min(3, 7, 1, 9, 2)
+say clamp(15, 0, 10)
+say sign(-5)
+say sign(0)
+say sign(5)
+say random_int(1, 6)
+say is_even(4)
+say is_odd(7)
+say gcd(12, 8)
+say lcm(4, 6)
+say factorial(6)
+say fib(10)`,
+
+funcs:`define add(a, b)
+  return a + b
+end
+
+define square(n)
+  return n * n
+end
+
+define greet(name)
+  set msg to "Hello, " + name + "!"
+  return msg
+end
+
+define max_of(a, b)
+  if a > b
+    return a
+  else
+    return b
+  end
+end
+
+say call add(3, 4)
+say call square(9)
+say call greet("Alice")
+say call max_of(10, 20)
+
+define counter()
+  set c to 0
+  set c to c + 1
+  return c
+end
+
+say call counter()
+say call counter()`,
+
+loops:`set i to 0
+loop i to 4
+  say "for loop: " + i
+  set i to i + 1
+end
+
+set j to 10
+while j > 0
+  say "while: " + j
+  set j to j - 3
+end
+
+set arr to [10, 20, 30]
+for_each x in arr
+  say "item: " + x
+end
+
+set k to 0
+repeat 3
+  say "repeat: " + k
+  set k to k + 1
+end`,
+
+ifelse:`set score to 85
+
+if score >= 90
+  say "A"
+else if score >= 80
+  say "B"
+else if score >= 70
+  say "C"
+else if score >= 60
+  say "D"
+else
+  say "F"
+end
+
+set x to 5
+switch x
+  case 1
+    say "one"
+  end
+  case 5
+    say "five"
+  end
+  default
+    say "other"
+  end
+end`,
+
+maps:`set m to {}
+map_set(m, "name", "Alice")
+map_set(m, "age", 30)
+map_set(m, "city", "Wonderland")
+say map_get(m, "name")
+say map_get(m, "age")
+say map_has(m, "city")
+say map_has(m, "phone")
+say map_keys(m)
+say map_values(m)
+map_delete(m, "city")
+say map_has(m, "city")
+say map_size(m)`,
+
+types:`set a to 42
+set b to 3.14
+set c to "hello"
+set d to true
+set e to false
+set f to null
+set g to [1,2,3]
+set h to {}
+say type_of(a)
+say type_of(b)
+say type_of(c)
+say type_of(d)
+say type_of(f)
+say type_of(g)
+say type_of(h)
+say to_int("42")
+say to_float("3.14")
+say to_str(100)
+say to_bool(0)
+say to_bool(1)
+say to_bool("")
+say to_bool("hello")
+say is_int(42)
+say is_float(3.14)
+say is_str("hi")
+say is_bool(true)
+say is_null(null)
+say is_array(g)
+say is_map(h)`,
+
+error:`try
+  say "before error"
+  throw "Something went wrong!"
+  say "after error"
+catch err
+  say "Caught: " + err
+end
+
+try
+  set x to 1 / 0
+  say x
+catch e
+  say "div by zero: " + e
+end
+
+say "execution continues"`,
+
+fizzbuzz:`set i to 1
+loop i to 30
+  if (i % 15) == 0
+    say "FizzBuzz"
+  else if (i % 3) == 0
+    say "Fizz"
+  else if (i % 5) == 0
+    say "Buzz"
+  else
+    say i
+  end
+  set i to i + 1
+end`,
+
+sort:`set arr to [5, 2, 8, 1, 9, 3, 7, 4, 6]
+say "Original: " + join(arr, ", ")
+set s to sort_arr(arr)
+say "Sorted asc: " + join(s, ", ")
+set d to sort_desc(arr)
+say "Sorted desc: " + join(d, ", ")
+
+set words to ["banana", "apple", "cherry", "date"]
+set ws to sort_arr(words)
+say "Sorted words: " + join(ws, ", ")`,
+
+recursion:`define factorial(n)
+  if n <= 1
+    return 1
+  end
+  return n * call factorial(n - 1)
+end
+
+define fib_r(n)
+  if n <= 1
+    return n
+  end
+  return call fib_r(n-1) + call fib_r(n-2)
+end
+
+define power(base, exp)
+  if exp == 0
+    return 1
+  end
+  return base * call power(base, exp - 1)
+end
+
+set i to 0
+loop i to 10
+  say "fib(" + i + ") = " + call fib_r(i)
+  set i to i + 1
+end
+say "10! = " + call factorial(10)
+say "2^16 = " + call power(2, 16)`,
+
+closures:`define make_adder(n)
+  define inner(x)
+    return x + n
+  end
+  return "inner"
+end
+
+say call make_adder(5)
+
+define apply(fn_name, val)
+  return call_fn(fn_name, val)
+end
+
+define double(x)
+  return x * 2
+end
+define triple(x)
+  return x * 3
+end
+
+say call apply("double", 7)
+say call apply("triple", 7)`,
+
+format:`set n to 1234567.891
+say format_num(n, 2)
+say format_int(42, 8)
+say format_percent(0.753)
+say pad_left("42", 8, " ")
+say pad_right("hi", 10, "-")
+say repeat("-", 20)
+say to_hex(255)
+say to_bin(255)
+say to_oct(255)
+say from_hex("ff")
+say from_bin("11111111")`
+};
+
+const DOCS = {
+vars:`--- Variables ---
+set x to 10
+set name to "Alice"
+set flag to true
+set nothing to null
+set arr to [1, 2, 3]
+set map to {}
+delete x         (remove variable)
+say type_of(x)   (number/string/bool/null/array/map)`,
+
+control:`--- Control flow ---
+if cond ... else if cond ... else ... end
+while cond ... end
+loop i to N ... end  (i <= N)
+for_each x in arr ... end
+repeat N ... end
+switch val
+  case v ... end
+  default ... end
+end
+break     (exit loop)
+continue  (next iteration)
+return v  (from function)`,
+
+funcs:`--- Functions ---
+define name(a, b)
+  return a + b
+end
+say call name(1, 2)
+call_fn("name", arg)    (dynamic call)
+Functions are first-class by name.
+define name() ... end inside define = nested`,
+
+arrays:`--- Arrays ---
+set a to [1,2,3]
+len(a)             push(a,v)         pop(a)
+shift(a)           unshift(a,v)      insert(a,i,v)
+remove_at(a,i)     slice(a,s,e)      concat_arr(a,b)
+first(a)           last(a)           nth(a,i)
+sum(a)             avg(a)            product(a)
+max(a)             min(a)            
+sort_arr(a)        sort_desc(a)      reverse_arr(a)
+contains(a,v)      index_of(a,v)     count_in(a,v)
+unique(a)          flatten(a)        zip(a,b)
+map_arr(a,"fn")    filter_arr(a,"fn") reduce_arr(a,"fn",init)
+join(a,sep)        arr_to_str(a)     range(s,e,step)
+fill(v,n)          shuffle(a)        sample(a,n)`,
+
+maps:`--- Maps ---
+set m to {}
+map_set(m,k,v)     map_get(m,k)      map_has(m,k)
+map_delete(m,k)    map_size(m)       map_keys(m)
+map_values(m)      map_entries(m)    map_clear(m)
+map_merge(a,b)     map_from_arrays(ks,vs)
+map_to_arr(m)      map_each(m,"fn")`,
+
+strings:`--- Strings ---
+len(s)             upper(s)          lower(s)
+trim(s)            ltrim(s)          rtrim(s)
+reverse(s)         capitalize(s)     title_case(s)
+replace(s,a,b)     replace_all(s,a,b)
+starts_with(s,p)   ends_with(s,p)    contains_str(s,p)
+split(s,sep)       join_str(a,sep)   concat(...)
+substr(s,i,len)    char_at(s,i)      char_code(s,i)
+from_char_code(n)  index_of_str(s,p) last_index_of(s,p)
+count_str(s,p)     pad_left(s,w,c)   pad_right(s,w,c)
+repeat(s,n)        strip(s,c)        snake_case(s)
+camel_case(s)      is_numeric(s)     is_alpha(s)
+is_alnum(s)`,
+
+math:`--- Math ---
+Constants: pi  e  infinity  nan
+sqrt(x)  cbrt(x)  pow(a,b)  exp(x)
+abs(x)   sign(x)  floor(x)  ceil(x)  round(x)  trunc(x)
+log(x,b) log2(x)  log10(x)  ln(x)
+sin(x)   cos(x)   tan(x)    asin(x)  acos(x)  atan(x)
+atan2(y,x)  sinh(x)  cosh(x)  tanh(x)
+min(...)   max(...)   clamp(v,lo,hi)
+random()   random_int(lo,hi)  random_float(lo,hi)
+is_even(n) is_odd(n)  is_prime(n)  is_nan(n)  is_finite(n)
+gcd(a,b)   lcm(a,b)   factorial(n)  fib(n)
+to_radians(d)  to_degrees(r)
+sum_range(lo,hi)  product_range(lo,hi)`,
+
+io:`--- I/O ---
+say v           (print with newline)
+print v         (print no newline)
+say_err v       (print to error stream)
+debug v         (print prefixed [debug])
+warn v          (print prefixed [warn])
+read()          (read next stdin token)
+readline()      (read next stdin line)
+clear_output()  (clear the output pane)`,
+
+types:`--- Types & Conversions ---
+type_of(v)         is_int(v)     is_float(v)
+is_str(v)          is_bool(v)    is_null(v)
+is_array(v)        is_map(v)     is_nan(v)
+to_int(v)          to_float(v)   to_str(v)
+to_bool(v)         to_hex(n)     to_bin(n)
+to_oct(n)          from_hex(s)   from_bin(s)
+from_oct(s)        format_num(n,dp)
+format_int(n,width) format_percent(n)`,
+
+error:`--- Error handling ---
+try
+  ...code...
+  throw "message"
+catch varname
+  say varname
+end
+throw v   (throw any value)
+assert(cond, msg)  (throw if false)`
+};
+
+function tokenize(line){
+  const toks=[];let i=0;
+  while(i<line.length){
+    if(line[i]===' '||line[i]==='\t'){i++;continue;}
+    if(line[i]==='"'){
+      let s='';i++;
+      while(i<line.length&&line[i]!=='"'){
+        if(line[i]==='\\'&&i+1<line.length){
+          const nc=line[i+1];
+          if(nc==='n')s+='\n';else if(nc==='t')s+='\t';else s+=nc;
+          i+=2;
+        }else s+=line[i++];
+      }
+      i++;toks.push({t:'str',v:s});continue;
+    }
+    if(line[i]==='['||line[i]===']'||line[i]==='{'||line[i]==='}'){
+      toks.push({t:'punc',v:line[i++]});continue;
+    }
+    if(line[i]===','){toks.push({t:'comma',v:','});i++;continue;}
+    if(/\d/.test(line[i])||(line[i]==='-'&&/\d/.test(line[i+1]||'')&&(toks.length===0||['op','cmp','lparen','comma','punc'].includes(toks[toks.length-1].t)))){
+      let n='';if(line[i]==='-')n+=line[i++];
+      while(i<line.length&&/[\d.]/.test(line[i]))n+=line[i++];
+      toks.push({t:'num',v:parseFloat(n)});continue;
+    }
+    if(line.slice(i,i+2)==='>='||line.slice(i,i+2)==='<='||line.slice(i,i+2)==='=='||line.slice(i,i+2)==='!='){
+      toks.push({t:'cmp',v:line.slice(i,i+2)});i+=2;continue;
+    }
+    if(line[i]==='>'||line[i]==='<'){toks.push({t:'cmp',v:line[i++]});continue;}
+    if(line[i]==='!'){toks.push({t:'unary',v:'!'});i++;continue;}
+    if('+-*/%'.includes(line[i])){toks.push({t:'op',v:line[i++]});continue;}
+    if(line[i]==='('){toks.push({t:'lparen',v:'('});i++;continue;}
+    if(line[i]===')'){toks.push({t:'rparen',v:')'});i++;continue;}
+    if(/[a-zA-Z_]/.test(line[i])){
+      let w='';while(i<line.length&&/[a-zA-Z0-9_]/.test(line[i]))w+=line[i++];
+      toks.push({t:'word',v:w});continue;
+    }
+    i++;
+  }
+  return toks;
+}
+
+function runVXC(code, stdinTokens){
+  const lines=code.split('\n');
+  const vars={};
+  const fns={};
+  const output=[];
+  let stdinIdx=0;
+  let stepCount=0;
+  const MAX_STEPS=50000;
+
+  function stdin_read(){
+    if(stdinIdx<stdinTokens.length)return stdinTokens[stdinIdx++].trim();
+    return '';
+  }
+
+  function callBuiltin(name,args,vars){
+    const a=args;
+    switch(name){
+      case 'len': return typeof a[0]==='string'?a[0].length:(Array.isArray(a[0])?a[0].length:0);
+      case 'upper': return String(a[0]).toUpperCase();
+      case 'lower': return String(a[0]).toLowerCase();
+      case 'trim': return String(a[0]).trim();
+      case 'ltrim': return String(a[0]).trimStart();
+      case 'rtrim': return String(a[0]).trimEnd();
+      case 'reverse': return String(a[0]).split('').reverse().join('');
+      case 'capitalize': return String(a[0]).split(' ').map(w=>w?w[0].toUpperCase()+w.slice(1).toLowerCase():'').join(' ');
+      case 'title_case': return String(a[0]).split(' ').map(w=>w?w[0].toUpperCase()+w.slice(1):'').join(' ');
+      case 'snake_case': return String(a[0]).trim().toLowerCase().replace(/\s+/g,'_');
+      case 'camel_case': {const ws=String(a[0]).trim().split(/\s+/);return ws[0].toLowerCase()+ws.slice(1).map(w=>w?w[0].toUpperCase()+w.slice(1):'').join('');}
+      case 'replace': return String(a[0]).replace(new RegExp(String(a[1]).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')),String(a[2]));
+      case 'replace_all': return String(a[0]).split(String(a[1])).join(String(a[2]));
+      case 'starts_with': return String(a[0]).startsWith(String(a[1]));
+      case 'ends_with': return String(a[0]).endsWith(String(a[1]));
+      case 'contains_str': return String(a[0]).includes(String(a[1]));
+      case 'split': {const res=String(a[0]).split(String(a[1]));return res;}
+      case 'join_str': return (a[0]||[]).join(String(a[1]||''));
+      case 'concat': return a.map(String).join('');
+      case 'substr': return String(a[0]).substr(Number(a[1]),Number(a[2]));
+      case 'char_at': return String(a[0]).charAt(Number(a[1]))||'';
+      case 'char_code': return String(a[0]).charCodeAt(Number(a[1]||0));
+      case 'from_char_code': return String.fromCharCode(Number(a[0]));
+      case 'index_of_str': return String(a[0]).indexOf(String(a[1]));
+      case 'last_index_of': return String(a[0]).lastIndexOf(String(a[1]));
+      case 'count_str': return String(a[0]).split(String(a[1])).length-1;
+      case 'pad_left': return String(a[0]).padStart(Number(a[1]),String(a[2]||' '));
+      case 'pad_right': return String(a[0]).padEnd(Number(a[1]),String(a[2]||' '));
+      case 'repeat': return String(a[0]).repeat(Number(a[1]));
+      case 'strip': {const c=String(a[1]||' ');let s=String(a[0]);while(s[0]===c)s=s.slice(1);while(s[s.length-1]===c)s=s.slice(0,-1);return s;}
+      case 'is_numeric': return !isNaN(String(a[0]).trim())&&String(a[0]).trim()!=='';
+      case 'is_alpha': return /^[a-zA-Z]+$/.test(String(a[0]));
+      case 'is_alnum': return /^[a-zA-Z0-9]+$/.test(String(a[0]));
+      case 'pi': return Math.PI;
+      case 'e': return Math.E;
+      case 'sqrt': return Math.sqrt(Number(a[0]));
+      case 'cbrt': return Math.cbrt(Number(a[0]));
+      case 'pow': return Math.pow(Number(a[0]),Number(a[1]));
+      case 'exp': return Math.exp(Number(a[0]));
+      case 'abs': return Math.abs(Number(a[0]));
+      case 'sign': return Math.sign(Number(a[0]));
+      case 'floor': return Math.floor(Number(a[0]));
+      case 'ceil': return Math.ceil(Number(a[0]));
+      case 'round': return Math.round(Number(a[0]));
+      case 'trunc': return Math.trunc(Number(a[0]));
+      case 'log': return Math.log(Number(a[0]))/Math.log(Number(a[1]));
+      case 'log2': return Math.log2(Number(a[0]));
+      case 'log10': return Math.log10(Number(a[0]));
+      case 'ln': return Math.log(Number(a[0]));
+      case 'sin': return Math.sin(Number(a[0]));
+      case 'cos': return Math.cos(Number(a[0]));
+      case 'tan': return Math.tan(Number(a[0]));
+      case 'asin': return Math.asin(Number(a[0]));
+      case 'acos': return Math.acos(Number(a[0]));
+      case 'atan': return Math.atan(Number(a[0]));
+      case 'atan2': return Math.atan2(Number(a[0]),Number(a[1]));
+      case 'sinh': return Math.sinh(Number(a[0]));
+      case 'cosh': return Math.cosh(Number(a[0]));
+      case 'tanh': return Math.tanh(Number(a[0]));
+      case 'max': return Math.max(...(Array.isArray(a[0])?a[0].map(Number):a.map(Number)));
+      case 'min': return Math.min(...(Array.isArray(a[0])?a[0].map(Number):a.map(Number)));
+      case 'clamp': return Math.max(Number(a[1]),Math.min(Number(a[2]),Number(a[0])));
+      case 'random': return Math.random();
+      case 'random_int': return Math.floor(Math.random()*(Number(a[1])-Number(a[0])+1))+Number(a[0]);
+      case 'random_float': return Math.random()*(Number(a[1])-Number(a[0]))+Number(a[0]);
+      case 'is_even': return Number(a[0])%2===0;
+      case 'is_odd': return Number(a[0])%2!==0;
+      case 'is_prime': {const n=Number(a[0]);if(n<2)return false;for(let i=2;i<=Math.sqrt(n);i++)if(n%i===0)return false;return true;}
+      case 'is_nan': return isNaN(a[0]);
+      case 'is_finite': return isFinite(Number(a[0]));
+      case 'gcd': {let x=Math.abs(Number(a[0])),y=Math.abs(Number(a[1]));while(y){const t=y;y=x%y;x=t;}return x;}
+      case 'lcm': {const g=callBuiltin('gcd',[a[0],a[1]],vars);return Math.abs(Number(a[0])*Number(a[1]))/g;}
+      case 'factorial': {let n=Number(a[0]),r=1;for(let i=2;i<=n;i++)r*=i;return r;}
+      case 'fib': {let n=Number(a[0]),a2=0,b2=1;if(n===0)return 0;for(let i=1;i<n;i++){const t=a2+b2;a2=b2;b2=t;}return b2;}
+      case 'to_radians': return Number(a[0])*Math.PI/180;
+      case 'to_degrees': return Number(a[0])*180/Math.PI;
+      case 'sum_range': {let s=0;for(let i=Number(a[0]);i<=Number(a[1]);i++)s+=i;return s;}
+      case 'product_range': {let p=1;for(let i=Number(a[0]);i<=Number(a[1]);i++)p*=i;return p;}
+      case 'push': if(Array.isArray(a[0])){a[0].push(a[1]);return a[0];}return null;
+      case 'pop': if(Array.isArray(a[0]))return a[0].pop();return null;
+      case 'shift': if(Array.isArray(a[0]))return a[0].shift();return null;
+      case 'unshift': if(Array.isArray(a[0])){a[0].unshift(a[1]);return a[0];}return null;
+      case 'insert': if(Array.isArray(a[0])){a[0].splice(Number(a[1]),0,a[2]);return a[0];}return null;
+      case 'remove_at': if(Array.isArray(a[0])){return a[0].splice(Number(a[1]),1)[0];}return null;
+      case 'slice': return Array.isArray(a[0])?a[0].slice(Number(a[1]),Number(a[2])):[];
+      case 'concat_arr': return (a[0]||[]).concat(a[1]||[]);
+      case 'first': return Array.isArray(a[0])&&a[0].length?a[0][0]:null;
+      case 'last': return Array.isArray(a[0])&&a[0].length?a[0][a[0].length-1]:null;
+      case 'nth': return Array.isArray(a[0])?a[0][Number(a[1])]??null:null;
+      case 'sum': return Array.isArray(a[0])?a[0].reduce((s,v)=>s+Number(v),0):0;
+      case 'avg': {const arr2=a[0];return Array.isArray(arr2)&&arr2.length?arr2.reduce((s,v)=>s+Number(v),0)/arr2.length:0;}
+      case 'product': return Array.isArray(a[0])?a[0].reduce((p,v)=>p*Number(v),1):0;
+      case 'sort_arr': return [...(a[0]||[])].sort((x,y)=>typeof x==='string'?x.localeCompare(y):Number(x)-Number(y));
+      case 'sort_desc': return [...(a[0]||[])].sort((x,y)=>typeof x==='string'?y.localeCompare(x):Number(y)-Number(x));
+      case 'reverse_arr': return [...(a[0]||[])].reverse();
+      case 'contains': return Array.isArray(a[0])&&a[0].includes(a[1]);
+      case 'index_of': return Array.isArray(a[0])?a[0].indexOf(a[1]):-1;
+      case 'count_in': return Array.isArray(a[0])?a[0].filter(v=>v===a[1]).length:0;
+      case 'unique': return Array.isArray(a[0])?[...new Set(a[0])]:[];
+      case 'flatten': return Array.isArray(a[0])?a[0].flat(Infinity):[];
+      case 'zip': {const arr1=a[0]||[],arr2=a[1]||[];return arr1.map((v,i)=>[v,arr2[i]??null]);}
+      case 'join': return (a[0]||[]).join(String(a[1]??','));
+      case 'arr_to_str': return JSON.stringify(a[0]);
+      case 'range': {const s=Number(a[0]),e=Number(a[1]),st=Number(a[2]||1),res=[];for(let i=s;i<e;i+=st)res.push(i);return res;}
+      case 'fill': {const res=[];for(let i=0;i<Number(a[1]);i++)res.push(a[0]);return res;}
+      case 'shuffle': {const arr2=[...(a[0]||[])];for(let i=arr2.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr2[i],arr2[j]]=[arr2[j],arr2[i]];}return arr2;}
+      case 'sample': {const arr2=callBuiltin('shuffle',[a[0]],vars);return arr2.slice(0,Number(a[1]));}
+      case 'map_arr': {const arr2=a[0]||[];const fn=String(a[1]);return arr2.map(v=>{if(fn==='double')return v*2;if(fn==='triple')return v*3;if(fn==='square')return v*v;if(fn==='negate')return -v;if(fn==='abs')return Math.abs(v);if(fn==='str')return String(v);if(fns[fn]){return callUserFn(fn,[v],{});}return v;});}
+      case 'filter_arr': {const arr2=a[0]||[];const fn=String(a[1]);return arr2.filter(v=>{if(fn==='positive')return Number(v)>0;if(fn==='negative')return Number(v)<0;if(fn==='even')return Number(v)%2===0;if(fn==='odd')return Number(v)%2!==0;if(fn==='truthy')return !!v;if(fns[fn])return !!callUserFn(fn,[v],{});return true;});}
+      case 'reduce_arr': {const arr2=a[0]||[];const fn=String(a[1]);let acc=a[2]??0;for(const v of arr2){if(fn==='sum')acc+=Number(v);else if(fn==='product')acc*=Number(v);else if(fn==='max')acc=Math.max(acc,Number(v));else if(fn==='min')acc=Math.min(acc,Number(v));else if(fns[fn])acc=callUserFn(fn,[acc,v],{});}return acc;}
+      case 'map_set': if(a[0]&&typeof a[0]==='object'&&!Array.isArray(a[0])){a[0][String(a[1])]=a[2];return a[0];}return null;
+      case 'map_get': if(a[0]&&typeof a[0]==='object'){return a[0][String(a[1])]??null;}return null;
+      case 'map_has': return !!(a[0]&&typeof a[0]==='object'&&Object.prototype.hasOwnProperty.call(a[0],String(a[1])));
+      case 'map_delete': if(a[0]&&typeof a[0]==='object'){delete a[0][String(a[1])];return a[0];}return null;
+      case 'map_size': return a[0]&&typeof a[0]==='object'?Object.keys(a[0]).length:0;
+      case 'map_keys': return a[0]&&typeof a[0]==='object'?Object.keys(a[0]):[];
+      case 'map_values': return a[0]&&typeof a[0]==='object'?Object.values(a[0]):[];
+      case 'map_entries': return a[0]&&typeof a[0]==='object'?Object.entries(a[0]).map(([k,v])=>[k,v]):[];
+      case 'map_clear': if(a[0]&&typeof a[0]==='object'){for(const k in a[0])delete a[0][k];return a[0];}return null;
+      case 'map_merge': return Object.assign({},a[0]||{},a[1]||{});
+      case 'map_from_arrays': {const m={};(a[0]||[]).forEach((k,i)=>m[k]=(a[1]||[])[i]??null);return m;}
+      case 'map_to_arr': return a[0]&&typeof a[0]==='object'?Object.entries(a[0]).map(([k,v])=>[k,v]):[];
+      case 'type_of': {const v=a[0];if(v===null||v===undefined)return'null';if(Array.isArray(v))return'array';if(typeof v==='object')return'map';if(Number.isInteger(v))return'int';if(typeof v==='number')return'float';return typeof v;}
+      case 'is_int': return Number.isInteger(a[0]);
+      case 'is_float': return typeof a[0]==='number'&&!Number.isInteger(a[0]);
+      case 'is_str': return typeof a[0]==='string';
+      case 'is_bool': return typeof a[0]==='boolean';
+      case 'is_null': return a[0]===null||a[0]===undefined;
+      case 'is_array': return Array.isArray(a[0]);
+      case 'is_map': return a[0]!==null&&typeof a[0]==='object'&&!Array.isArray(a[0]);
+      case 'to_int': {const n=parseInt(String(a[0]),10);return isNaN(n)?0:n;}
+      case 'to_float': {const n=parseFloat(String(a[0]));return isNaN(n)?0:n;}
+      case 'to_str': return displayVal(a[0]);
+      case 'to_bool': {const v=a[0];if(typeof v==='boolean')return v;if(typeof v==='number')return v!==0;if(typeof v==='string')return v!==''&&v!=='0'&&v!=='false';return !!v;}
+      case 'to_hex': return Number(a[0]).toString(16);
+      case 'to_bin': return Number(a[0]).toString(2);
+      case 'to_oct': return Number(a[0]).toString(8);
+      case 'from_hex': return parseInt(String(a[0]),16);
+      case 'from_bin': return parseInt(String(a[0]),2);
+      case 'from_oct': return parseInt(String(a[0]),8);
+      case 'format_num': {const n=Number(a[0]),dp=Number(a[1]??2);return n.toFixed(dp);}
+      case 'format_int': return String(a[0]).padStart(Number(a[1]||1),' ');
+      case 'format_percent': return (Number(a[0])*100).toFixed(1)+'%';
+      case 'read': return stdin_read();
+      case 'readline': return stdin_read();
+      case 'assert': {if(!a[0])throw String(a[1]||'Assertion failed');return true;}
+      case 'call_fn': {const fn=String(a[0]);return callUserFn(fn,a.slice(1),vars);}
+      default: return null;
+    }
+  }
+
+  function callUserFn(name, argVals, parentVars){
+    const fn=fns[name];
+    if(!fn)throw 'Undefined function: '+name;
+    const localVars=Object.assign({},parentVars);
+    fn.params.forEach((p,i)=>localVars[p]=argVals[i]??null);
+    let retVal=null;
+    try{execBlock(fn.body,0,fn.body.length,localVars);}
+    catch(r){if(r&&r.__return__)retVal=r.value;else throw r;}
+    return retVal;
+  }
+
+  function evalExpr(toks,vars){
+    let pos=0;
+    function peek(){return toks[pos];}
+    function consume(){return toks[pos++];}
+    function parseArray(){
+      const arr=[];
+      while(pos<toks.length&&!(peek().t==='punc'&&peek().v===']')){
+        arr.push(parseAssign());
+        if(peek()&&peek().t==='comma')consume();
+      }
+      if(peek()&&peek().v===']')consume();
+      return arr;
+    }
+    function parseMap(){
+      const map={};
+      while(pos<toks.length&&!(peek().t==='punc'&&peek().v==='}')){
+        const k=parseAssign();
+        if(peek()&&peek().t==='comma')consume();
+        const v=parseAssign();
+        if(peek()&&peek().t==='comma')consume();
+        map[String(k)]=v;
+      }
+      if(peek()&&peek().v==='}')consume();
+      return map;
+    }
+    function parseCallArgs(){
+      const args=[];
+      if(peek()&&peek().t==='rparen')return args;
+      while(pos<toks.length){
+        args.push(parseAssign());
+        if(peek()&&peek().t==='comma')consume();
+        else break;
+      }
+      return args;
+    }
+    function primary(){
+      if(pos>=toks.length)return undefined;
+      const t=peek();
+      if(t.t==='unary'&&t.v==='!'){consume();return !primary();}
+      if(t.t==='punc'&&t.v==='['){consume();return parseArray();}
+      if(t.t==='punc'&&t.v==='{'){consume();return parseMap();}
+      if(t.t==='lparen'){consume();const v=parseAssign();if(peek()&&peek().t==='rparen')consume();return v;}
+      if(t.t==='num'){consume();return t.v;}
+      if(t.t==='str'){consume();return t.v;}
+      if(t.t==='word'){
+        const name=t.v;consume();
+        if(peek()&&peek().t==='lparen'){
+          consume();
+          const args=parseCallArgs();
+          if(peek()&&peek().t==='rparen')consume();
+          if(name==='call'){
+            const fnName=String(args[0]);
+            return callUserFn(fnName,args.slice(1),vars);
+          }
+          if(fns[name]&&!['len','upper','lower','trim','sqrt','pow','abs','floor','ceil','round','push','pop','join','say','print'].includes(name)){
+            return callUserFn(name,args,vars);
+          }
+          return callBuiltin(name,args,vars);
+        }
+        if(name==='true')return true;
+        if(name==='false')return false;
+        if(name==='null'||name==='nil')return null;
+        if(name==='pi')return Math.PI;
+        if(name==='e')return Math.E;
+        if(name==='infinity')return Infinity;
+        if(name==='nan')return NaN;
+        const v=vars[name];
+        return v!==undefined?v:0;
+      }
+      return undefined;
+    }
+    function parseMul(){
+      let l=primary();
+      while(pos<toks.length&&peek().t==='op'&&'*/%'.includes(peek().v)){
+        const op=consume().v;
+        const r=primary();
+        if(op==='*')l=l*r;
+        else if(op==='/')l=r!==0?l/r:'ERR:div0';
+        else l=l%r;
+      }
+      return l;
+    }
+    function parseAdd(){
+      let l=parseMul();
+      while(pos<toks.length&&peek().t==='op'&&'+-'.includes(peek().v)){
+        const op=consume().v;
+        const r=parseMul();
+        if(op==='+'){
+          if(typeof l==='string'||typeof r==='string')l=displayVal(l)+displayVal(r);
+          else l=l+r;
+        }else l=Number(l)-Number(r);
+      }
+      return l;
+    }
+    function parseCmp(){
+      let l=parseAdd();
+      while(pos<toks.length&&peek().t==='cmp'){
+        const op=consume().v;
+        const r=parseAdd();
+        if(op==='>')l=l>r;else if(op==='<')l=l<r;
+        else if(op==='>=')l=l>=r;else if(op==='<=')l=l<=r;
+        else if(op==='==')l=l==r;else if(op==='!=')l=l!=r;
+      }
+      return l;
+    }
+    function parseAnd(){
+      let l=parseCmp();
+      while(pos<toks.length&&peek().t==='word'&&peek().v==='and'){consume();const r=parseCmp();l=l&&r;}
+      return l;
+    }
+    function parseOr(){
+      let l=parseAnd();
+      while(pos<toks.length&&peek().t==='word'&&peek().v==='or'){consume();const r=parseAnd();l=l||r;}
+      return l;
+    }
+    function parseAssign(){return parseOr();}
+    return parseAssign();
+  }
+
+  function displayVal(v){
+    if(v===null||v===undefined)return 'null';
+    if(Array.isArray(v))return '['+v.map(displayVal).join(', ')+']';
+    if(typeof v==='object')return '{'+Object.entries(v).map(([k,vv])=>k+': '+displayVal(vv)).join(', ')+'}';
+    return String(v);
+  }
+
+  function execBlock(blockLines,start,end,vars){
+    let i=start;
+    while(i<end){
+      if(stepCount++>MAX_STEPS)throw new Error('Step limit reached');
+      const raw=blockLines[i];
+      const line=raw.trim();
+      if(!line||line.startsWith('#')||line.startsWith('//')){i++;continue;}
+      const toks=tokenize(line);
+      if(!toks.length){i++;continue;}
+      const kw=toks[0].v;
+
+      if(kw==='set'&&toks[2]&&toks[2].v==='to'){
+        const name=toks[1].v;
+        vars[name]=evalExpr(toks.slice(3),vars);
+        i++;continue;
+      }
+      if(kw==='delete'){vars[toks[1].v]=undefined;i++;continue;}
+      if(kw==='say'||kw==='print'||kw==='say_err'||kw==='warn'||kw==='debug'){
+        let val;
+        if(toks.length===1){val='';}
+        else{val=evalExpr(toks.slice(1),vars);}
+        const text=displayVal(val);
+        if(kw==='say_err'||kw==='warn')output.push({type:'warn',text:(kw==='warn'?'[warn] ':'')+text});
+        else if(kw==='debug')output.push({type:'dbg',text:'[debug] '+text});
+        else output.push({type:'ok',text});
+        i++;continue;
+      }
+      if(kw==='clear_output'){output.length=0;i++;continue;}
+      if(kw==='throw'){
+        const val=evalExpr(toks.slice(1),vars);
+        throw {__vxc_err__:true,message:displayVal(val)};
+      }
+      if(kw==='assert'){
+        const args=evalExpr(toks.slice(1),vars);
+        if(!args)throw {__vxc_err__:true,message:'Assertion failed'};
+        i++;continue;
+      }
+      if(kw==='return'){
+        const val=toks.length>1?evalExpr(toks.slice(1),vars):null;
+        throw {__return__:true,value:val};
+      }
+      if(kw==='break')throw {__break__:true};
+      if(kw==='continue')throw {__continue__:true};
+
+      if(kw==='define'){
+        const fname=toks[1].v;
+        const params=[];
+        for(let pi=3;pi<toks.length;pi++){if(toks[pi].t==='word')params.push(toks[pi].v);}
+        let depth=1,j=i+1;
+        while(j<end&&depth>0){
+          const it=tokenize(blockLines[j].trim());
+          if(it.length&&['define','if','loop','while','for_each','repeat','switch','try'].includes(it[0].v))depth++;
+          if(it.length&&it[0].v==='end')depth--;
+          if(depth>0)j++;
+        }
+        fns[fname]={params,body:blockLines.slice(i+1,j)};
+        i=j+1;continue;
+      }
+
+      if(kw==='if'){
+        const cond=evalExpr(toks.slice(1).filter(t=>t.v!=='then'),vars);
+        let depth=1,j=i+1;
+        const branches=[{cond,start:i+1}];
+        while(j<end&&depth>0){
+          const it=tokenize(blockLines[j].trim());
+          if(!it.length){j++;continue;}
+          if(['define','if','loop','while','for_each','repeat','switch','try'].includes(it[0].v))depth++;
+          if(it[0].v==='end')depth--;
+          if(depth===1&&it[0].v==='else'&&it[1]&&it[1].v==='if'){
+            const c=evalExpr(it.slice(2),vars);
+            branches[branches.length-1].end=j;
+            branches.push({cond:c,start:j+1});
+          }else if(depth===1&&it[0].v==='else'){
+            branches[branches.length-1].end=j;
+            branches.push({cond:true,start:j+1,isElse:true});
+          }
+          if(depth>0)j++;
+        }
+        branches[branches.length-1].end=j;
+        let executed=false;
+        for(const br of branches){
+          if(!executed&&br.cond){
+            execBlock(blockLines,br.start,br.end,vars);
+            executed=true;
+          }
+        }
+        i=j+1;continue;
+      }
+
+      if(kw==='loop'){
+        const varName=toks[1].v;
+        const limitExpr=toks.slice(3);
+        let depth=1,j=i+1;
+        while(j<end&&depth>0){
+          const it=tokenize(blockLines[j].trim());
+          if(it.length&&['define','if','loop','while','for_each','repeat','switch','try'].includes(it[0].v))depth++;
+          if(it.length&&it[0].v==='end')depth--;
+          if(depth>0)j++;
+        }
+        const bodyLines=blockLines.slice(i+1,j);
+        while(vars[varName]<=evalExpr(limitExpr,vars)&&stepCount<MAX_STEPS){
+          try{execBlock(bodyLines,0,bodyLines.length,vars);}
+          catch(e){if(e&&e.__break__)break;if(e&&e.__continue__)continue;throw e;}
+        }
+        i=j+1;continue;
+      }
+
+      if(kw==='while'){
+        const condToks=toks.slice(1);
+        let depth=1,j=i+1;
+        while(j<end&&depth>0){
+          const it=tokenize(blockLines[j].trim());
+          if(it.length&&['define','if','loop','while','for_each','repeat','switch','try'].includes(it[0].v))depth++;
+          if(it.length&&it[0].v==='end')depth--;
+          if(depth>0)j++;
+        }
+        const bodyLines=blockLines.slice(i+1,j);
+        let wc=0;
+        while(evalExpr(condToks,vars)&&stepCount<MAX_STEPS&&wc++<100000){
+          try{execBlock(bodyLines,0,bodyLines.length,vars);}
+          catch(e){if(e&&e.__break__)break;if(e&&e.__continue__)continue;throw e;}
+        }
+        i=j+1;continue;
+      }
+
+      if(kw==='repeat'){
+        const count=evalExpr(toks.slice(1),vars);
+        let depth=1,j=i+1;
+        while(j<end&&depth>0){
+          const it=tokenize(blockLines[j].trim());
+          if(it.length&&['define','if','loop','while','for_each','repeat','switch','try'].includes(it[0].v))depth++;
+          if(it.length&&it[0].v==='end')depth--;
+          if(depth>0)j++;
+        }
+        const bodyLines=blockLines.slice(i+1,j);
+        for(let ri=0;ri<Number(count)&&stepCount<MAX_STEPS;ri++){
+          try{execBlock(bodyLines,0,bodyLines.length,vars);}
+          catch(e){if(e&&e.__break__)break;if(e&&e.__continue__)continue;throw e;}
+        }
+        i=j+1;continue;
+      }
+
+      if(kw==='for_each'){
+        const itemVar=toks[1].v;
+        const arrVal=vars[toks[3].v];
+        let depth=1,j=i+1;
+        while(j<end&&depth>0){
+          const it=tokenize(blockLines[j].trim());
+          if(it.length&&['define','if','loop','while','for_each','repeat','switch','try'].includes(it[0].v))depth++;
+          if(it.length&&it[0].v==='end')depth--;
+          if(depth>0)j++;
+        }
+        const bodyLines=blockLines.slice(i+1,j);
+        const items=Array.isArray(arrVal)?arrVal:(typeof arrVal==='string'?arrVal.split(''):Object.values(arrVal||{}));
+        for(const item of items){
+          vars[itemVar]=item;
+          try{execBlock(bodyLines,0,bodyLines.length,vars);}
+          catch(e){if(e&&e.__break__)break;if(e&&e.__continue__)continue;throw e;}
+        }
+        i=j+1;continue;
+      }
+
+      if(kw==='switch'){
+        const switchVal=evalExpr(toks.slice(1),vars);
+        let depth=1,j=i+1;
+        while(j<end&&depth>0){
+          const it=tokenize(blockLines[j].trim());
+          if(it.length&&['define','if','loop','while','for_each','repeat','switch','try'].includes(it[0].v))depth++;
+          if(it.length&&it[0].v==='end')depth--;
+          if(depth>0)j++;
+        }
+        const switchEnd=j;
+        let si=i+1;let matched=false;
+        while(si<switchEnd){
+          const sit=tokenize(blockLines[si].trim());
+          if(!sit.length){si++;continue;}
+          if(sit[0].v==='case'||sit[0].v==='default'){
+            const caseVal=sit[0].v==='default'?switchVal:evalExpr(sit.slice(1),vars);
+            let depth2=1,ej=si+1;
+            while(ej<switchEnd&&depth2>0){
+              const et=tokenize(blockLines[ej].trim());
+              if(et.length&&['define','if','loop','while','for_each','repeat','switch','try','case','default'].includes(et[0].v)&&et[0].v!=='end')depth2++;
+              if(et.length&&et[0].v==='end')depth2--;
+              if(depth2>0)ej++;
+            }
+            if(!matched&&(sit[0].v==='default'||caseVal==switchVal)){
+              matched=true;
+              execBlock(blockLines,si+1,ej,vars);
+            }
+            si=ej+1;
+          }else si++;
+        }
+        i=switchEnd+1;continue;
+      }
+
+      if(kw==='try'){
+        let depth=1,j=i+1;
+        let catchStart=-1,catchVar='';
+        while(j<end&&depth>0){
+          const it=tokenize(blockLines[j].trim());
+          if(it.length&&['define','if','loop','while','for_each','repeat','switch','try'].includes(it[0].v))depth++;
+          if(it.length&&it[0].v==='end')depth--;
+          if(depth===1&&it[0].v==='catch'){catchStart=j;catchVar=it[1]?it[1].v:'err';}
+          if(depth>0)j++;
+        }
+        const tryEnd=catchStart>-1?catchStart:j;
+        const catchEnd=j;
+        try{
+          execBlock(blockLines,i+1,tryEnd,vars);
+        }catch(e){
+          if(e&&e.__return__)throw e;
+          if(e&&e.__break__)throw e;
+          if(e&&e.__continue__)throw e;
+          if(catchStart>-1){
+            const msg=e&&e.__vxc_err__?e.message:(e&&e.message?e.message:String(e));
+            vars[catchVar]=msg;
+            execBlock(blockLines,catchStart+1,catchEnd,vars);
+          }
+        }
+        i=catchEnd+1;continue;
+      }
+
+      if(kw==='call'){
+        const fnName=toks[1].v;
+        if(toks[2]&&toks[2].t==='lparen'){
+          const argToks=toks.slice(2);
+          const args=evalExpr(argToks,vars);
+          callUserFn(fnName,Array.isArray(args)?args:[args],vars);
+        }else{
+          callUserFn(fnName,[],vars);
+        }
+        i++;continue;
+      }
+
+      if(toks[1]&&toks[1].v==='to'&&kw!=='set'){
+        vars[kw]=evalExpr(toks.slice(2),vars);
+        i++;continue;
+      }
+
+      if(toks[0].t==='word'&&toks[1]&&toks[1].t==='lparen'){
+        const fname=toks[0].v;
+        const fToks=toks.slice(1);
+        const val=evalExpr([toks[0],...fToks],vars);
+        i++;continue;
+      }
+
+      output.push({type:'err',text:'Unknown: '+line});
+      i++;
+    }
+  }
+
+  try{execBlock(lines,0,lines.length,vars);}
+  catch(e){
+    if(e&&e.__vxc_err__)output.push({type:'err',text:'Error: '+e.message});
+    else if(e&&e.message)output.push({type:'err',text:'Runtime error: '+e.message});
+    else if(e&&!e.__return__&&!e.__break__)output.push({type:'err',text:'Error: '+String(e)});
+  }
+  return output;
+}
+
+document.getElementById('runBtn').onclick=()=>{
+  const code=document.getElementById('editor').value;
+  const stdinRaw=document.getElementById('stdin-input').value;
+  const stdinTokens=stdinRaw?stdinRaw.split(','):[];
+  const result=runVXC(code,stdinTokens);
+  const out=document.getElementById('output');
+  if(!result.length){out.innerHTML='<span class="info">Program ran with no output.</span>';return;}
+  out.innerHTML=result.map(r=>`<span class="${r.type}">${r.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`).join('\n');
+};
+
+document.getElementById('clearBtn').onclick=()=>{document.getElementById('output').innerHTML='<span class="info">Output cleared.</span>';};
+document.getElementById('resetBtn').onclick=()=>{document.getElementById('output').innerHTML='<span class="info">Ready.</span>';};
+
+document.querySelectorAll('.ex-btn').forEach(btn=>{
+  btn.onclick=()=>{
+    document.getElementById('editor').value=EXAMPLES[btn.dataset.ex]||'';
+    document.getElementById('output').innerHTML='<span class="info">Press Run to execute.</span>';
+  };
+});
+
+document.querySelectorAll('.doc-btn').forEach(btn=>{
+  btn.onclick=()=>{
+    const out=document.getElementById('output');
+    const doc=DOCS[btn.dataset.doc]||'No docs found.';
+    out.innerHTML='<span class="info">'+doc.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span>';
+  };
+});
+
+document.getElementById('editor').addEventListener('keydown',e=>{
+  if(e.key==='Tab'){e.preventDefault();const s=e.target.selectionStart,en=e.target.selectionEnd;e.target.value=e.target.value.substring(0,s)+'  '+e.target.value.substring(en);e.target.selectionStart=e.target.selectionEnd=s+2;}
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){document.getElementById('runBtn').click();}
+});
+</script>
