@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETM Clan | MVSD</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: url('https://i.imgur.com/8w0RZkM.jpg') center/cover fixed;
+    color: white;
+    overflow-x: hidden;
+}
+
+/* fog overlay */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at top, rgba(56,189,248,0.15), rgba(2,6,23,0.92));
+    z-index: -2;
+}
+
+/* particles */
+canvas {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+}
+
+header {
+    text-align: center;
+    padding: 35px;
+    background: rgba(2,6,23,0.9);
+    border-bottom: 2px solid #38bdf8;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 3em;
+    color: #38bdf8;
+}
+
+section {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: rgba(2,6,23,0.9);
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+}
+
+.members {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.member {
+    background: #020617;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.member:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #38bdf8;
+}
+
+button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    background: #38bdf8;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+/* MODAL */
+#modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    background: rgba(0,0,0,0.85);
+    justify-content: center;
+    align-items: center;
+}
+
+.box {
+    background: #020617;
+    padding: 20px;
+    border-radius: 12px;
+    width: 300px;
+    text-align: center;
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="bg"></canvas>
+
+<header>
+    <h1>ETM CLAN</h1>
+    <p>⚡ MVSD DOMINATION UNIT ⚡</p>
+</header>
+
+<section>
+
+<!-- ABOUT -->
+<div class="card">
+    <h2>About ETM</h2>
+    <p>Elite Roblox MVSD clan focused on teamwork, skill, and dominance.</p>
+</div>
+
+<!-- MEMBERS -->
+<div class="card">
+    <h2>Members</h2>
+    <div class="members">
+        <div class="member" onclick="profile('ETM_Xzyrox')">👑 ETM_Xzyrox</div>
+        <div class="member" onclick="profile('ETM_SPAMMY')">⚔️ ETM_SPAMMY</div>
+        <div class="member" onclick="profile('ETM_Demon')">⚔️ ETM_Demon</div>
+        <div class="member" onclick="profile('ETM_Diamonde')">💎 ETM_Diamonde</div>
+    </div>
+</div>
+
+<!-- ROBLOX HANGOUT -->
+<div class="card">
+    <h2>🎮 ETM Hangout</h2>
+    <p>Join the official Roblox ETM hangout server.</p>
+
+    <button onclick="joinGame()">
+        Play Roblox Hangout
+    </button>
+</div>
+
+<!-- JOIN -->
+<div class="card">
+    <h2>Join ETM</h2>
+    <button onclick="apply()">Apply Now</button>
+</div>
+
+</section>
+
+<!-- PROFILE MODAL -->
+<div id="modal">
+    <div class="box">
+        <h3 id="pName"></h3>
+        <p id="pInfo"></p>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<script>
+
+/* PROFILE DATA */
+function profile(name) {
+
+    let data = {
+        "ETM_Xzyrox": "Leader - aggressive push player",
+        "ETM_SPAMMY": "Co-Leader - tactical rusher",
+        "ETM_Demon": "Co-Leader - close combat expert",
+        "ETM_Diamonde": "Elite - sniper/support hybrid"
+    };
+
+    document.getElementById("pName").innerText = name;
+    document.getElementById("pInfo").innerText = data[name];
+
+    document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+/* ROBLOX GAME LINK */
+function joinGame() {
+    window.open("YOUR_ROBLOX_HANGOUT_LINK_HERE", "_blank");
+}
+
+/* APPLY SYSTEM */
+function apply() {
+    let name = prompt("Roblox username:");
+    if (!name) return;
+
+    let reason = prompt("Why do you want to join ETM?");
+    if (!reason) return;
+
+    window.location.href =
+    "mailto:etm_mte_etm_mte@yahoo.com?subject=ETM Application&body=" +
+    encodeURIComponent(name + "\n\n" + reason);
+}
+
+/* PARTICLES */
+const c = document.getElementById("bg");
+const x = c.getContext("2d");
+
+c.width = window.innerWidth;
+c.height = window.innerHeight;
+
+let p = [];
+
+for (let i=0;i<60;i++){
+    p.push({
+        x: Math.random()*c.width,
+        y: Math.random()*c.height,
+        r: Math.random()*2
+    });
+}
+
+function draw(){
+    x.clearRect(0,0,c.width,c.height);
+
+    x.fillStyle="#38bdf8";
+
+    p.forEach(o=>{
+        o.y += 0.4;
+        if(o.y>c.height) o.y=0;
+        x.fillRect(o.x,o.y,o.r,o.r);
+    });
+
+    requestAnimationFrame(draw);
+}
+
+draw();
+
+</script>
+
+</body>
+</html>
